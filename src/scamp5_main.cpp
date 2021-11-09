@@ -61,6 +61,7 @@ int main(){
 		scamp5_draw_end();
 
 		//draw rules on R6
+		//load a rule template for R6 as the update rule of CA
 
 
 		// readout register image for inspection
