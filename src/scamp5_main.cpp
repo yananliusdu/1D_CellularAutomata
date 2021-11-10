@@ -12,14 +12,16 @@
  */
 
 #include <scamp5.hpp>
+#include "rule.hpp"
 
 using namespace SCAMP5_PE;
 
 
 // Global Variables
 
-const dreg_t dreg_map[5] = { R9, R8, R7, R6, R5 };
-
+const dreg_t load_dreg[6] = { R10, R9, R8, R7, R6, R5 };
+void load_dreg_image(DREG target_dreg,const uint8_t*image_buffer,uint16_t n_rows);
+void refresh_dreg_storage();
 
 int main(){
 
@@ -35,8 +37,8 @@ int main(){
 
 	vs_gui_set_info(VS_M0_PROJECT_INFO_STRING);
 
-    auto display_1 = vs_gui_add_display("original",0,0,2);
-//    auto display_2 = vs_gui_add_display("D2A restored",0,1);
+    auto display_1 = vs_gui_add_display("",0,0,2);
+    auto display_2 = vs_gui_add_display("rule",0,2,2);
 //    auto display_3 = vs_gui_add_display("digital bit",1,0);
 
 
@@ -62,10 +64,14 @@ int main(){
 
 		//draw rules on R6
 		//load a rule template for R6 as the update rule of CA
+		load_dreg_image(R6, rule30, 256);
+
+		//update
 
 
 		// readout register image for inspection
 		scamp5_output_image(R5,display_1);
+		scamp5_output_image(R6,display_2);
 
 
     }
@@ -73,3 +79,62 @@ int main(){
     return 0;
 }
 
+
+
+void load_dreg_image(DREG target_dreg,const uint8_t*image_buffer,uint16_t n_rows)
+{
+	const size_t row_bytes = n_rows/8;
+    scamp5_dynamic_kernel_begin();
+    	CLR(target_dreg);
+	scamp5_dynamic_kernel_end();
+    scamp5_draw_begin(target_dreg);
+    for(int r=0;r<n_rows;r++){
+		const uint8_t*row_array = &image_buffer[r*row_bytes];
+		int u = 0;
+		while(u<32){
+			if(row_array[u]==0x00){
+				u += 1;
+			}else
+			if(row_array[u]==0xFF){
+				int u0 = u;
+				int u1 = u;
+				u += 1;
+				while(u<32){
+					if(row_array[u]==0xFF){
+						u1 = u;
+						u += 1;
+					}else{
+						break;
+					}
+				};
+				scamp5_draw_rect(r,u0*8,r,u1*8 + 7);
+			}else{
+				uint8_t w = row_array[u];
+				uint8_t m = 1;
+				for(int c=u*8;c<(u*8 + 8);c++){
+					if(w&m){
+						scamp5_draw_pixel(r,c);
+					}
+					m <<= 1;
+				}
+				u += 1;
+			}
+		}
+		if(r%16==0){
+			refresh_dreg_storage();
+		}
+	}
+	scamp5_draw_end();
+}
+
+void refresh_dreg_storage(){
+	scamp5_kernel_begin();
+		REFRESH(load_dreg[0]);
+		REFRESH(load_dreg[1]);
+		REFRESH(load_dreg[2]);
+		REFRESH(load_dreg[3]);
+		REFRESH(load_dreg[4]);
+		REFRESH(load_dreg[5]);
+		REFRESH(load_dreg[6]);
+	scamp5_kernel_end();
+}

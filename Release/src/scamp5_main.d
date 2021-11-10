@@ -34,7 +34,7 @@ src/scamp5_main.o src/scamp5_main.d: ../src/scamp5_main.cpp \
  C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_kernel_api_macro_analog.hpp \
  C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_kernel_api.hpp \
  C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_kernel_api_macro_digital.hpp \
- C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_sim.hpp
+ C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_sim.hpp ../src/rule.hpp
 
 C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5.hpp:
 
@@ -107,3 +107,5 @@ C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_kernel_api.hpp:
 C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_kernel_api_macro_digital.hpp:
 
 C:\MCUWorkspace\LPCworkspace2\s5d_m0\inc/scamp5_sim.hpp:
+
+../src/rule.hpp:
