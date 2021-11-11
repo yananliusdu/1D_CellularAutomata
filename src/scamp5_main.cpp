@@ -52,10 +52,12 @@ int main(){
      * Frame Loop
      */
 
+    vs_stopwatch stopwatch;
+
     while(1){
     	// sync with frame trigger timing and process interaction with host
     	vs_frame_loop_control();
-
+    	uint32_t process_time = 0;
 		//initilisation
     	//R5 is the source image
 		scamp5_kernel_begin();
@@ -75,6 +77,7 @@ int main(){
 		   MOV(R6,R5);
 		scamp5_kernel_end();
 
+		stopwatch.reset();
 		for(int i = 1; i <= iterations; i++)
 		{
 			scamp5_kernel_begin();
@@ -87,6 +90,8 @@ int main(){
 			   OR(R6,R5);
 			scamp5_kernel_end();
 		}
+		process_time = stopwatch.get_usec();
+        vs_post_text("process_time %d us; iterations: %d\n", process_time, iterations);
 
 		// readout register image for inspection
 		scamp5_output_image(R6,display_1);
