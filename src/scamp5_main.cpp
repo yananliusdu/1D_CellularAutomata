@@ -9,6 +9,8 @@
  * Rule 30
  *
  * 09/11/2021
+ *
+ * Rule 90 can be implemented directly using XOR
  */
 
 #include <scamp5.hpp>
@@ -16,12 +18,15 @@
 
 using namespace SCAMP5_PE;
 
-
 // Global Variables
-
 const dreg_t load_dreg[6] = { R10, R9, R8, R7, R6, R5 };
+
+//functions
 void load_dreg_image(DREG target_dreg,const uint8_t*image_buffer,uint16_t n_rows);
 void refresh_dreg_storage();
+
+
+
 
 int main(){
 
@@ -38,9 +43,10 @@ int main(){
 	vs_gui_set_info(VS_M0_PROJECT_INFO_STRING);
 
     auto display_1 = vs_gui_add_display("",0,0,2);
-    auto display_2 = vs_gui_add_display("rule",0,2,2);
+//    auto display_2 = vs_gui_add_display("rule",0,2,2);
 //    auto display_3 = vs_gui_add_display("digital bit",1,0);
-
+    int iterations;
+    vs_gui_add_slider("iterations", 1,255,1,&iterations);
 
     /*
      * Frame Loop
@@ -54,24 +60,37 @@ int main(){
     	//R5 is the source image
 		scamp5_kernel_begin();
 		  CLR(R5);
-		  CLR(R6);
 		  ALL();
 		scamp5_kernel_end();
-
 		scamp5_draw_begin(R5);
 		  scamp5_draw_point(0, 127);
 		scamp5_draw_end();
-
 		//draw rules on R6
 		//load a rule template for R6 as the update rule of CA
-		load_dreg_image(R6, rule30, 256);
+		//load_dreg_image(R6, rule30, 256);
 
 		//update
+		scamp5_kernel_begin();
+		   all();
+		   MOV(R6,R5);
+		scamp5_kernel_end();
 
+		for(int i = 1; i <= iterations; i++)
+		{
+			scamp5_kernel_begin();
+			   MOV(R5,R6);
+			   DNEWS(R0,R6,west);
+			   DNEWS(R6,R0,west);
+			   XOR(R7,R5,R6);
+			   DNEWS(R0,R7,north);
+			   DNEWS(R6,R0,east);
+			   OR(R6,R5);
+			scamp5_kernel_end();
+		}
 
 		// readout register image for inspection
-		scamp5_output_image(R5,display_1);
-		scamp5_output_image(R6,display_2);
+		scamp5_output_image(R6,display_1);
+//		scamp5_output_image(R6,display_2);
 
 
     }

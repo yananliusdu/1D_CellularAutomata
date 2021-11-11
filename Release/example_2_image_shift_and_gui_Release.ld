@@ -5,7 +5,7 @@
  * Generated linker script file for LPC4357-M0
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.23
- * LPCXpresso v8.2.2 [Build 650] [2016-09-09]  on 10-Nov-2021 15:33:40
+ * LPCXpresso v8.2.2 [Build 650] [2016-09-09]  on 11-Nov-2021 10:56:18
  */
 
 INCLUDE "example_2_image_shift_and_gui_Release_library.ld"
