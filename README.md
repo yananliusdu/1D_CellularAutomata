@@ -1,4 +1,4 @@
-# 1D_CellularAutomata
+# 1D_CellularAutomata with SCAMP5 vision system
 
 
 elementary Cellular Automata on sensor
